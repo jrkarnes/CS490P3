@@ -4,7 +4,7 @@
   $db_hostname = 'KC-SCE-APPDB01.kc.umkc.edu';
   $db_database = "jrkn87";
   $db_username = "jrkn87";
-  $db_password = "fGJqTUgGKzhgziv";
+  $db_password = "OBFUSCATED";
   
 
  $connection = mysqli_connect($db_hostname, $db_username,$db_password,$db_database);
