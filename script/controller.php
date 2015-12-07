@@ -172,7 +172,7 @@ function get_rental_history($connection)
             $array["Model"]=$row["Model"];
             $array["Year"]=$row["Year"];
             $array["Picture"]=$row["Picture"];
-            $final["cars"][] = $array;
+            $returned["cars"][] = $array;
         }
     }
     

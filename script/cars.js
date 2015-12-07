@@ -8,7 +8,12 @@ function init() {
     
     // Need event for RETURN car and any events which are based on the
     // rental history of the customer.
-    $("#return_car").on("click", show_rental_history);
+    show_info();
+}
+
+function show_info(){
+    show_rented();
+    show_rental_history();
 }
 
 function maybe_search(event){
