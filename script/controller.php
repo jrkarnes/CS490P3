@@ -34,6 +34,20 @@ if (isset($_POST['type']) && is_session_active())
                     }
                     else {$result = "failure";}
                     break;
+                case "rentals":
+                    if(isset($_POST['value']))
+                    {
+                        $result = show_rented($connection);
+                    }
+                    else {$result = "failure";}
+                    break;
+                case "return":
+                    if(isset($_POST['value']))
+                    {
+                        $result = return_car($connection, $_POST['value']);
+                    }
+                    else {$result = "failure";}
+                    break;
 	}
 }
 	echo $result;
@@ -111,6 +125,51 @@ function rent_car($connection, $id)
  * a rented car. Don't forget to update the rental status on the CAR table
  * since the rental status is duplicated in this table.
  */
+function show_rented($connection)
+{
+    $final = Array();
+    $final["rentals"] = Array();
+    $query = "SELECT Car.Picture, CarSpecs.Make, CarSpecs.Model, CarSpecs.YearMade, CarSpecs.Size, "
+            . "Rental.ID, Rental.rentDate"
+            . "FROM Car INNER JOIN CarSpecs ON Car.CarSpecsID = CarSpecs.ID "
+            . "INNER JOIN Rental ON Car.ID = Rental.carID "
+            . "WHERE Rental.Status = 1 AND "
+            . "WHERE Rental.customerID = '" . $_SESSION['ID'] . "';";//if i am understanding this correctly this would
+    //use the stored ID in the session (the users) to grab the rentals that are not returned who also have
+    //a customer ID that matches the ID stored in the session, and then grab the car related info associated with the rental
+    $result = mysqli_query($connection, $query);
+    if (!$result)
+        return json_encode($final);
+    else {
+        $row_count = mysqli_num_rows($result);
+        for ($i = 0; $i < $row_count; $i++) {
+            $row = mysqli_fetch_array($result);
+            $array = array();
+            $array["ID"] = $row["ID"];//i believe this sshould be the rental id
+            $array["Make"] = $row["Make"];
+            $array["Model"]=$row["Model"];
+            $array["Year"]=$row["Year"];//should this be YearMade?
+            $array["Picture"]=$row["Picture"];
+            $array["Size"]=$row["Size"];
+            $array["rentDate"]=$row["rentDate"];//i am not really understanding the naming pattern here for the keys
+            $final["rentals"][] = $array;
+        }
+    }
+    return json_encode($final);    
+    
+}
+function return_car($connection, $id)
+{
+    $query = "UPDATE Rental SET status = '2', returnDate = '" . get_current_date()
+            . "' WHERE ID = '" . $id . "';"
+            . "UPDATE Car SET status = '1' FROM Car INNER JOIN Rental ON Car.ID = Rental.carID"
+            . "WHERE Rental.ID = '" . $id . "';";
+    $result = mysqli_query($connection, $query);
+    if (!$result)
+            return "failure";
+    else
+            return "success";
+}
 
 /* I have included the RENTED CAR block here for your convienence in writing
  * the array structure to JSON encode for the element builder
