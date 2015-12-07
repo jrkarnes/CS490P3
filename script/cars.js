@@ -5,8 +5,10 @@ function init() {
     $("#logout-link").on("click",logout); // Logout from system
     $("#find-car").on("click", find_cars); // Find Cars
     $("#find-car-input").on("keydown", function(event){maybe_search(event);});
+    
     // Need event for RETURN car and any events which are based on the
     // rental history of the customer.
+    $("#return_car").on("click", show_rental_history);
 }
 
 function maybe_search(event){
@@ -83,12 +85,21 @@ function rent_car(id)
 
 function show_rented_cars()
 {
-    
+ 
 }
 
 function show_rental_history()
 {
-    
+    $.ajax({
+		method: "POST",
+		url: "controller.php",
+		dataType: "text",
+		data:{type:"history"} , // not sure
+		success: function () {
+			// show the data
+                        find_cars();
+		}
+	});
 }
 
 function logout(){
