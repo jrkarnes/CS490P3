@@ -34,6 +34,10 @@ if (isset($_POST['type']) && is_session_active())
                     }
                     else {$result = "failure";}
                     break;
+                    
+                case "history":
+                    $result = get_rental_history($connection, $status);
+                    break;
 	}
 }
 	echo $result;
@@ -143,6 +147,37 @@ function rent_car($connection, $id)
             </tr>
 {{#end block rented_car}}
  */
+
+function get_rental_history($connection, $status)
+{
+    $returned = Array();
+    $returned["cars"] = Array();
+    
+    if($status == 1){
+        $query = "SELECT Car.ID, Car.Color, Car.Picture, CarSpecs.Make, CarSpecs.Model, CarSpecs.YearMade, CarSpecs.Size "
+                . "FROM Car INNER JOIN CarSpecs ON Car.CarSpecsID = CarSpecs.ID "
+                . "INNER JOIN Rental ON Car.ID = Rental.carID "
+                . "WHERE Rental.Status = '" .$status ."' ;";
+        $result = mysqli_query($connection, $query);
+        if (!$result)
+            return json_encode($final);
+        else {
+            $row_count = mysqli_num_rows($result);
+            for ($i = 0; $i < $row_count; $i++) {
+                $row = mysqli_fetch_array($result);
+                $array = array();
+                $array["ID"] = $row["ID"];
+                $array["Color"] = $row["Color"];
+                $array["Make"] = $row["Make"];
+                $array["Model"]=$row["Model"];
+                $array["Year"]=$row["Year"];
+                $array["Picture"]=$row["Picture"];
+                $final["cars"][] = $array;
+            }
+        }
+    }
+    return json_encode($returned);
+}
 
 /* I have also included the RETURNED CAR block for much the same reason:
 {{#block returned_car}}
