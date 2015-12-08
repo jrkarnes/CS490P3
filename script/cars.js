@@ -7,6 +7,9 @@ function init() {
     $("#find-car-input").on("keydown", function(event){maybe_search(event);});
     
     // Need event for RETURN car and any events which are based on the
+    $(".return_car").on("click",return_car($this.attr("data-rental-id")));
+    //there needs to be a event listner for the tabs, however since they dont have ID's i'm not quite sure
+    //how to do that, i can add IDs and do a couple event statements, but i wanted to kow what you thought first.
     // rental history of the customer.
     show_info();
 }
@@ -80,10 +83,74 @@ function rent_car(id)
     });
 }
 
+<<<<<<< HEAD
 
 function show_rented_cars()
 {
  
+=======
+function return_car(rentId)
+{
+    $.ajax({
+        method: "POST",
+        url: "controller.php",
+        dataType: "json",
+        data: { type: "return",value:rentId},
+        success: function (rec_data) {
+            if(rec_data == "failure")
+            {
+                alert("Your return request failed or something");//should make this more professional
+            }
+            else
+            {
+                //update the return view
+                show_rented_cars();
+                alert("Car successfully returned!");
+                //build the html again?
+                var info_template=$("#rented-car-template").html();
+                var html_maker=new htmlMaker(info_template);
+                var html=html_maker.getHTML(rec_data);    
+                $("#rented_cars").html(html);
+                
+                $(".return_car").on("click",return_car($this.attr("data-rental-id")));//pretty sure this is correct
+            }
+        }
+    });
+}
+/* Here is where the other two functions go to find cars currently rented by
+ * A customer and to pull a customer's rental history (based on returns).
+ * Keep in mind that the LOGIN function in PHP sets some session variables
+ * which are probably helpful:
+ * $_SESSION["username"] = $row["name"];  //Customer name here.
+ * $_SESSION["ID"] = $row["ID"]; // Also save the user's ID for updates and fast SQL queries.
+ */
+
+function show_rented_cars()
+{
+    var showIt = "showData";
+    $.ajax({
+        method: "POST",
+        url: "controller.php",
+        dataType: "json",
+        data: { type:"rentals",
+                value:showIt},
+        success: function(rec_data) {
+            if(rec_data == "failure")
+            {
+                alert("something went wrong trying to display rentals.")
+            }
+            else
+            {
+                var info_template=$("#rented-car-template").html();
+                var html_maker=new htmlMaker(info_template);
+                var html=html_maker.getHTML(rec_data);    
+                $("#rented_cars").html(html);
+                
+                $(".return_car").on("click",return_car($this.attr("data-rental-id")));//pretty sure this is correct                
+            }
+        }
+    });
+>>>>>>> refs/remotes/origin/master
 }
 
 function show_rental_history()

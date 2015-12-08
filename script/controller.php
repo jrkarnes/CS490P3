@@ -34,10 +34,27 @@ if (isset($_POST['type']) && is_session_active())
                     }
                     else {$result = "failure";}
                     break;
+<<<<<<< HEAD
                     
         case "history":
 				$result = get_rental_history($connection);
 				break;
+=======
+                case "rentals":
+                    if(isset($_POST['value']))
+                    {
+                        $result = show_rented($connection);
+                    }
+                    else {$result = "failure";}
+                    break;
+                case "return":
+                    if(isset($_POST['value']))
+                    {
+                        $result = return_car($connection, $_POST['value']);
+                    }
+                    else {$result = "failure";}
+                    break;
+>>>>>>> refs/remotes/origin/master
 	}
 }
 	echo $result;
@@ -108,6 +125,7 @@ function rent_car($connection, $id)
             return "success";
 }
 
+<<<<<<< HEAD
 function get_rental_history($connection)
 {
     $returned = Array();
@@ -121,11 +139,36 @@ function get_rental_history($connection)
     $result = mysqli_query($connection, $query);
     if (!$result)
         return json_encode($returned);
+=======
+/* This is where the rental history and rented cars functions go.
+ * If you'll notice, I have a short helper function here called
+ * get_current_date which will return the current date as a string
+ * in YYYY-MM-DD format for helping out with the SQL queries for returning
+ * a rented car. Don't forget to update the rental status on the CAR table
+ * since the rental status is duplicated in this table.
+ */
+function show_rented($connection)
+{
+    $final = Array();
+    $final["rentals"] = Array();
+    $query = "SELECT Car.Picture, CarSpecs.Make, CarSpecs.Model, CarSpecs.YearMade, CarSpecs.Size, "
+            . "Rental.ID, Rental.rentDate"
+            . "FROM Car INNER JOIN CarSpecs ON Car.CarSpecsID = CarSpecs.ID "
+            . "INNER JOIN Rental ON Car.ID = Rental.carID "
+            . "WHERE Rental.Status = 1 AND "
+            . "WHERE Rental.customerID = '" . $_SESSION['ID'] . "';";//if i am understanding this correctly this would
+    //use the stored ID in the session (the users) to grab the rentals that are not returned who also have
+    //a customer ID that matches the ID stored in the session, and then grab the car related info associated with the rental
+    $result = mysqli_query($connection, $query);
+    if (!$result)
+        return json_encode($final);
+>>>>>>> refs/remotes/origin/master
     else {
         $row_count = mysqli_num_rows($result);
         for ($i = 0; $i < $row_count; $i++) {
             $row = mysqli_fetch_array($result);
             $array = array();
+<<<<<<< HEAD
             $array["ID"] = $row["ID"];
             $array["Color"] = $row["Color"];
             $array["Make"] = $row["Make"];
@@ -138,6 +181,92 @@ function get_rental_history($connection)
     
     return json_encode($returned);
 }
+=======
+            $array["ID"] = $row["ID"];//i believe this sshould be the rental id
+            $array["Make"] = $row["Make"];
+            $array["Model"]=$row["Model"];
+            $array["Year"]=$row["Year"];//should this be YearMade?
+            $array["Picture"]=$row["Picture"];
+            $array["Size"]=$row["Size"];
+            $array["rentDate"]=$row["rentDate"];//i am not really understanding the naming pattern here for the keys
+            $final["rentals"][] = $array;
+        }
+    }
+    return json_encode($final);    
+    
+}
+function return_car($connection, $id)
+{
+    $query = "UPDATE Rental SET status = '2', returnDate = '" . get_current_date()
+            . "' WHERE ID = '" . $id . "';"
+            . "UPDATE Car SET status = '1' FROM Car INNER JOIN Rental ON Car.ID = Rental.carID"
+            . "WHERE Rental.ID = '" . $id . "';";
+    $result = mysqli_query($connection, $query);
+    if (!$result)
+            return "failure";
+    else
+            return "success";
+}
+
+/* I have included the RENTED CAR block here for your convienence in writing
+ * the array structure to JSON encode for the element builder
+ {{#block rented_car}}
+            <tr>
+                <td><img src="{{picture}}"></td> 
+                <td class="car_details"> 
+                    <div class="car_title">
+                        <div class="car_make">
+                            {{make}} | {{model}}
+                        </div>
+                        <div class="car_year">
+                            {{year}}
+                        </div>
+                    </div>
+                    <div class="car_size">
+                        Size: {{size}}
+                    </div>
+                    <div class="rental_ID">
+                        Rental #: {{rental_ID}}
+                    </div>   
+                    <div class="car_date">
+                        Rent date: {{rent_date}}
+                    </div>          
+                </td>
+                <td>
+                    <div class="return_car" data-rental-id="{{rental_ID}}">Return Car</div>
+                </td>
+
+            </tr>
+{{#end block rented_car}}
+ */
+
+/* I have also included the RETURNED CAR block for much the same reason:
+{{#block returned_car}}
+            <tr>
+                <td><img src="{{picture}}"></td> 
+                <td class="car_details"> 
+                    <div class="car_title">
+                        <div class="car_make">
+                            {{make}} | {{model}}
+                        </div>
+                        <div class="car_year">
+                            {{year}}
+                        </div>
+                    </div>
+                    <div class="car_size">
+                        Size: {{size}}
+                    </div>
+                    <div class="rental_ID">
+                        Rental #: {{rental_ID}}
+                    </div>   
+                    <div class="car_date">
+                        Return date: {{return_date}}
+                    </div>          
+                </td>
+            </tr>
+{{#end block returned_car}}
+ */
+>>>>>>> refs/remotes/origin/master
 
 function get_current_date()
 {
