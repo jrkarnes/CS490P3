@@ -14,47 +14,43 @@ if (isset($_POST['type']) && is_session_active())
 	// What do we want to do with it?
 	switch ($request_type) {
 		case "logout":
-                    logout();
-                    $result = "success";
-                    break;
+			logout();
+			$result = "success";
+			break;
 		case "search":
-                    // If the search query didn't make it through we don't want to do anything.
-                    if (isset($_POST['value']))
-                    {
-                        $search_string = $_POST['value'];
-                        $result = find_cars($connection, $search_string);
-                    }
-                    else {$result = "failure";}
-                    break;
+			// If the search query didn't make it through we don't want to do anything.
+			if (isset($_POST['value']))
+			{
+				$search_string = $_POST['value'];
+				$result = find_cars($connection, $search_string);
+			}
+			else {$result = "failure";}
+			break;
 		case "rent":
-                    if (isset($_POST['value']))
-                    {
-                        // This should work
-                        $result = rent_car($connection, $_POST['value']);
-                    }
-                    else {$result = "failure";}
-                    break;
-<<<<<<< HEAD
-                    
+			if (isset($_POST['value']))
+			{
+				// This should work
+				$result = rent_car($connection, $_POST['value']);
+			}
+			else {$result = "failure";}
+			break;
         case "history":
-				$result = get_rental_history($connection);
-				break;
-=======
-                case "rentals":
-                    if(isset($_POST['value']))
-                    {
-                        $result = show_rented($connection);
-                    }
-                    else {$result = "failure";}
-                    break;
-                case "return":
-                    if(isset($_POST['value']))
-                    {
-                        $result = return_car($connection, $_POST['value']);
-                    }
-                    else {$result = "failure";}
-                    break;
->>>>>>> refs/remotes/origin/master
+			$result = get_rental_history($connection);
+			break;
+		case "rentals":
+			if(isset($_POST['value']))
+			{
+				$result = show_rented($connection); // Checking for post's VALUE but not using it?
+			}
+			else {$result = "failure";}
+			break;
+		case "return":
+			if(isset($_POST['value']))
+			{
+				$result = return_car($connection, $_POST['value']);
+			}
+			else {$result = "failure";}
+			break;
 	}
 }
 	echo $result;
@@ -125,13 +121,12 @@ function rent_car($connection, $id)
             return "success";
 }
 
-<<<<<<< HEAD
 function get_rental_history($connection)
 {
+	// I think that the rental history is dependent on the client, isn't it?
+	// That's not reflected here.
     $returned = Array();
     $returned["cars"] = Array();
-    
-    
     $query = "SELECT Car.ID, Car.Color, Car.Picture, CarSpecs.Make, CarSpecs.Model, CarSpecs.YearMade, CarSpecs.Size "
             . "FROM Car INNER JOIN CarSpecs ON Car.CarSpecsID = CarSpecs.ID "
             . "INNER JOIN Rental ON Car.ID = Rental.carID "
@@ -139,14 +134,24 @@ function get_rental_history($connection)
     $result = mysqli_query($connection, $query);
     if (!$result)
         return json_encode($returned);
-=======
-/* This is where the rental history and rented cars functions go.
- * If you'll notice, I have a short helper function here called
- * get_current_date which will return the current date as a string
- * in YYYY-MM-DD format for helping out with the SQL queries for returning
- * a rented car. Don't forget to update the rental status on the CAR table
- * since the rental status is duplicated in this table.
- */
+	else{
+		$row_count = mysqli_num_rows($result);
+        for ($i = 0; $i < $row_count; $i++) {
+			$array["ID"] = $row["ID"];//i believe this should be the rental id
+            $array["Make"] = $row["Make"];
+            $array["Model"]=$row["Model"];
+            $array["Year"]=$row["Year"];//should this be YearMade?
+            $array["Picture"]=$row["Picture"];
+            $array["Size"]=$row["Size"];
+            $array["rentDate"]=$row["rentDate"];//i am not really understanding the naming pattern here for the keys
+            $returned["rentals"][] = $array;
+		}
+        }
+    }
+    return json_encode($returned);    
+}
+
+
 function show_rented($connection)
 {
     $final = Array();
@@ -156,45 +161,31 @@ function show_rented($connection)
             . "FROM Car INNER JOIN CarSpecs ON Car.CarSpecsID = CarSpecs.ID "
             . "INNER JOIN Rental ON Car.ID = Rental.carID "
             . "WHERE Rental.Status = 1 AND "
-            . "WHERE Rental.customerID = '" . $_SESSION['ID'] . "';";//if i am understanding this correctly this would
+            . "WHERE Rental.customerID = '" . $_SESSION['ID'] . "';"; //if I am understanding this correctly this would
     //use the stored ID in the session (the users) to grab the rentals that are not returned who also have
     //a customer ID that matches the ID stored in the session, and then grab the car related info associated with the rental
+	// -- Jkarnes: Yes. That's exactly what the $*_SESSION['ID'] does.
     $result = mysqli_query($connection, $query);
     if (!$result)
         return json_encode($final);
->>>>>>> refs/remotes/origin/master
     else {
         $row_count = mysqli_num_rows($result);
         for ($i = 0; $i < $row_count; $i++) {
             $row = mysqli_fetch_array($result);
             $array = array();
-<<<<<<< HEAD
             $array["ID"] = $row["ID"];
             $array["Color"] = $row["Color"];
             $array["Make"] = $row["Make"];
             $array["Model"]=$row["Model"];
             $array["Year"]=$row["Year"];
             $array["Picture"]=$row["Picture"];
-            $returned["cars"][] = $array;
-        }
-    }
-    
-    return json_encode($returned);
-}
-=======
-            $array["ID"] = $row["ID"];//i believe this sshould be the rental id
-            $array["Make"] = $row["Make"];
-            $array["Model"]=$row["Model"];
-            $array["Year"]=$row["Year"];//should this be YearMade?
-            $array["Picture"]=$row["Picture"];
-            $array["Size"]=$row["Size"];
-            $array["rentDate"]=$row["rentDate"];//i am not really understanding the naming pattern here for the keys
             $final["rentals"][] = $array;
         }
     }
-    return json_encode($final);    
     
+    return json_encode($final);
 }
+
 function return_car($connection, $id)
 {
     $query = "UPDATE Rental SET status = '2', returnDate = '" . get_current_date()
@@ -266,7 +257,6 @@ function return_car($connection, $id)
             </tr>
 {{#end block returned_car}}
  */
->>>>>>> refs/remotes/origin/master
 
 function get_current_date()
 {
