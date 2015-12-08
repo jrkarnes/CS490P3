@@ -13,47 +13,48 @@ if (isset($_POST['type']) && is_session_active())
 
 	// What do we want to do with it?
 	switch ($request_type) {
-		case "logout":
-			logout();
-			$result = "success";
-			break;
-		case "search":
-			// If the search query didn't make it through we don't want to do anything.
-			if (isset($_POST['value']))
-			{
-				$search_string = $_POST['value'];
-				$result = find_cars($connection, $search_string);
-			}
-			else {$result = "failure";}
-			break;
-		case "rent":
-			if (isset($_POST['value']))
-			{
-				// This should work
-				$result = rent_car($connection, $_POST['value']);
-			}
-			else {$result = "failure";}
-			break;
+	case "logout":
+		logout();
+		$result = "success";
+		break;
+	case "search":
+		// If the search query didn't make it through we don't want to do anything.
+		if (isset($_POST['value']))
+		{
+			$search_string = $_POST['value'];
+			$result = find_cars($connection, $search_string);
+		}
+		else {$result = "failure";}
+		break;
+	case "rent":
+		if (isset($_POST['value']))
+		{
+			// This should work
+			$result = rent_car($connection, $_POST['value']);
+		}
+		else {$result = "failure";}
+		break;
         case "history":
-			$result = get_rental_history($connection);
-			break;
-		case "rentals":
-			if(isset($_POST['value']))
-			{
-				$result = show_rented($connection); // Checking for post's VALUE but not using it?
-			}
-			else {$result = "failure";}
-			break;
-		case "return":
-			if(isset($_POST['value']))
-			{
-				$result = return_car($connection, $_POST['value']);
-			}
-			else {$result = "failure";}
-			break;
+		$result = get_rental_history($connection);
+		break;
+	case "rentals":
+		if(isset($_POST['value']))
+		{
+			$result = show_rented($connection); // Checking for post's VALUE but not using it?
+		}
+		else {$result = "failure";}
+		break;
+	case "return":
+		if(isset($_POST['value']))
+		{
+			$result = return_car($connection, $_POST['value']);
+		}
+		else {$result = "failure";}
+		break;
 	}
-}
 	echo $result;
+}
+
 
 function is_session_active() {
     return isset($_SESSION) && count($_SESSION) > 0 && time() < $_SESSION['start'] + 60 * 5; //check if it has been 5 minutes
@@ -130,7 +131,7 @@ function get_rental_history($connection)
     $query = "SELECT Car.ID, Car.Color, Car.Picture, CarSpecs.Make, CarSpecs.Model, CarSpecs.YearMade, CarSpecs.Size "
             . "FROM Car INNER JOIN CarSpecs ON Car.CarSpecsID = CarSpecs.ID "
             . "INNER JOIN Rental ON Car.ID = Rental.carID "
-            . "WHERE Rental.Status = 2 ;"; //  “2” means it has been returned. 
+            . "WHERE Rental.Status = 2 ;"; //  â€œ2â€ means it has been returned. 
     $result = mysqli_query($connection, $query);
     if (!$result)
         return json_encode($returned);
@@ -147,10 +148,8 @@ function get_rental_history($connection)
             $returned["rentals"][] = $array;
 		}
         }
-    }
-    return json_encode($returned);    
+        return json_encode($returned); 
 }
-
 
 function show_rented($connection)
 {
@@ -198,65 +197,6 @@ function return_car($connection, $id)
     else
             return "success";
 }
-
-/* I have included the RENTED CAR block here for your convienence in writing
- * the array structure to JSON encode for the element builder
- {{#block rented_car}}
-            <tr>
-                <td><img src="{{picture}}"></td> 
-                <td class="car_details"> 
-                    <div class="car_title">
-                        <div class="car_make">
-                            {{make}} | {{model}}
-                        </div>
-                        <div class="car_year">
-                            {{year}}
-                        </div>
-                    </div>
-                    <div class="car_size">
-                        Size: {{size}}
-                    </div>
-                    <div class="rental_ID">
-                        Rental #: {{rental_ID}}
-                    </div>   
-                    <div class="car_date">
-                        Rent date: {{rent_date}}
-                    </div>          
-                </td>
-                <td>
-                    <div class="return_car" data-rental-id="{{rental_ID}}">Return Car</div>
-                </td>
-
-            </tr>
-{{#end block rented_car}}
- */
-
-/* I have also included the RETURNED CAR block for much the same reason:
-{{#block returned_car}}
-            <tr>
-                <td><img src="{{picture}}"></td> 
-                <td class="car_details"> 
-                    <div class="car_title">
-                        <div class="car_make">
-                            {{make}} | {{model}}
-                        </div>
-                        <div class="car_year">
-                            {{year}}
-                        </div>
-                    </div>
-                    <div class="car_size">
-                        Size: {{size}}
-                    </div>
-                    <div class="rental_ID">
-                        Rental #: {{rental_ID}}
-                    </div>   
-                    <div class="car_date">
-                        Return date: {{return_date}}
-                    </div>          
-                </td>
-            </tr>
-{{#end block returned_car}}
- */
 
 function get_current_date()
 {
