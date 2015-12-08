@@ -34,6 +34,12 @@ if (isset($_POST['type']) && is_session_active())
                     }
                     else {$result = "failure";}
                     break;
+<<<<<<< HEAD
+                    
+        case "history":
+				$result = get_rental_history($connection);
+				break;
+=======
                 case "rentals":
                     if(isset($_POST['value']))
                     {
@@ -48,6 +54,7 @@ if (isset($_POST['type']) && is_session_active())
                     }
                     else {$result = "failure";}
                     break;
+>>>>>>> refs/remotes/origin/master
 	}
 }
 	echo $result;
@@ -118,6 +125,21 @@ function rent_car($connection, $id)
             return "success";
 }
 
+<<<<<<< HEAD
+function get_rental_history($connection)
+{
+    $returned = Array();
+    $returned["cars"] = Array();
+    
+    
+    $query = "SELECT Car.ID, Car.Color, Car.Picture, CarSpecs.Make, CarSpecs.Model, CarSpecs.YearMade, CarSpecs.Size "
+            . "FROM Car INNER JOIN CarSpecs ON Car.CarSpecsID = CarSpecs.ID "
+            . "INNER JOIN Rental ON Car.ID = Rental.carID "
+            . "WHERE Rental.Status = 2 ;"; //  “2” means it has been returned. 
+    $result = mysqli_query($connection, $query);
+    if (!$result)
+        return json_encode($returned);
+=======
 /* This is where the rental history and rented cars functions go.
  * If you'll notice, I have a short helper function here called
  * get_current_date which will return the current date as a string
@@ -140,11 +162,26 @@ function show_rented($connection)
     $result = mysqli_query($connection, $query);
     if (!$result)
         return json_encode($final);
+>>>>>>> refs/remotes/origin/master
     else {
         $row_count = mysqli_num_rows($result);
         for ($i = 0; $i < $row_count; $i++) {
             $row = mysqli_fetch_array($result);
             $array = array();
+<<<<<<< HEAD
+            $array["ID"] = $row["ID"];
+            $array["Color"] = $row["Color"];
+            $array["Make"] = $row["Make"];
+            $array["Model"]=$row["Model"];
+            $array["Year"]=$row["Year"];
+            $array["Picture"]=$row["Picture"];
+            $returned["cars"][] = $array;
+        }
+    }
+    
+    return json_encode($returned);
+}
+=======
             $array["ID"] = $row["ID"];//i believe this sshould be the rental id
             $array["Make"] = $row["Make"];
             $array["Model"]=$row["Model"];
@@ -229,6 +266,7 @@ function return_car($connection, $id)
             </tr>
 {{#end block returned_car}}
  */
+>>>>>>> refs/remotes/origin/master
 
 function get_current_date()
 {

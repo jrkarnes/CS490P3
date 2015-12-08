@@ -5,11 +5,18 @@ function init() {
     $("#logout-link").on("click",logout); // Logout from system
     $("#find-car").on("click", find_cars); // Find Cars
     $("#find-car-input").on("keydown", function(event){maybe_search(event);});
+    
     // Need event for RETURN car and any events which are based on the
     $(".return_car").on("click",return_car($this.attr("data-rental-id")));
     //there needs to be a event listner for the tabs, however since they dont have ID's i'm not quite sure
     //how to do that, i can add IDs and do a couple event statements, but i wanted to kow what you thought first.
     // rental history of the customer.
+    show_info();
+}
+
+function show_info(){
+    show_rented();
+    show_rental_history();
 }
 
 function maybe_search(event){
@@ -76,6 +83,12 @@ function rent_car(id)
     });
 }
 
+<<<<<<< HEAD
+
+function show_rented_cars()
+{
+ 
+=======
 function return_car(rentId)
 {
     $.ajax({
@@ -137,11 +150,20 @@ function show_rented_cars()
             }
         }
     });
+>>>>>>> refs/remotes/origin/master
 }
 
 function show_rental_history()
 {
-    
+    $.ajax({
+		method: "POST",
+		url: "controller.php",
+		dataType: "text",
+		data:{type:"history"} ,
+		success: function () {
+        find_cars();
+		}
+	});
 }
 
 function logout(){
@@ -154,12 +176,12 @@ function logout(){
 		success: function (rec_data) {
 			if ($.trim(rec_data) == "success")
 			{
-                            alert("You have been logged out!");
-                            // Redirect back to homepage
-                            window.location.assign("index.html"); //redirect the page to cars.html
+				alert("You have been logged out!");
+				// Redirect back to homepage
+				window.location.assign("index.html"); //redirect the page to cars.html
 			}
 			else
-                            alert("You have NOT been logged out! Try again.");
+				alert("You have NOT been logged out! Try again.");
 		}
 	});
 }
