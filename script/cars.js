@@ -80,13 +80,6 @@ function rent_car(id)
     });
 }
 
-/* Here is where the other two functions go to find cars currently rented by
- * A customer and to pull a customer's rental history (based on returns).
- * Keep in mind that the LOGIN function in PHP sets some session variables
- * which are probably helpful:
- * $_SESSION["username"] = $row["name"];  //Customer name here.
- * $_SESSION["ID"] = $row["ID"]; // Also save the user's ID for updates and fast SQL queries.
- */
 
 function show_rented_cars()
 {
@@ -99,10 +92,9 @@ function show_rental_history()
 		method: "POST",
 		url: "controller.php",
 		dataType: "text",
-		data:{type:"history"} , // not sure
+		data:{type:"history"} ,
 		success: function () {
-			// show the data
-                        find_cars();
+        find_cars();
 		}
 	});
 }
@@ -117,12 +109,12 @@ function logout(){
 		success: function (rec_data) {
 			if ($.trim(rec_data) == "success")
 			{
-                            alert("You have been logged out!");
-                            // Redirect back to homepage
-                            window.location.assign("index.html"); //redirect the page to cars.html
+				alert("You have been logged out!");
+				// Redirect back to homepage
+				window.location.assign("index.html"); //redirect the page to cars.html
 			}
 			else
-                            alert("You have NOT been logged out! Try again.");
+				alert("You have NOT been logged out! Try again.");
 		}
 	});
 }

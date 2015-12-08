@@ -35,9 +35,9 @@ if (isset($_POST['type']) && is_session_active())
                     else {$result = "failure";}
                     break;
                     
-                case "history":
-                    $result = get_rental_history($connection);
-                    break;
+        case "history":
+				$result = get_rental_history($connection);
+				break;
 	}
 }
 	echo $result;
@@ -108,46 +108,6 @@ function rent_car($connection, $id)
             return "success";
 }
 
-/* This is where the rental history and rented cars functions go.
- * If you'll notice, I have a short helper function here called
- * get_current_date which will return the current date as a string
- * in YYYY-MM-DD format for helping out with the SQL queries for returning
- * a rented car. Don't forget to update the rental status on the CAR table
- * since the rental status is duplicated in this table.
- */
-
-/* I have included the RENTED CAR block here for your convienence in writing
- * the array structure to JSON encode for the element builder
- {{#block rented_car}}
-            <tr>
-                <td><img src="{{picture}}"></td> 
-                <td class="car_details"> 
-                    <div class="car_title">
-                        <div class="car_make">
-                            {{make}} | {{model}}
-                        </div>
-                        <div class="car_year">
-                            {{year}}
-                        </div>
-                    </div>
-                    <div class="car_size">
-                        Size: {{size}}
-                    </div>
-                    <div class="rental_ID">
-                        Rental #: {{rental_ID}}
-                    </div>   
-                    <div class="car_date">
-                        Rent date: {{rent_date}}
-                    </div>          
-                </td>
-                <td>
-                    <div class="return_car" data-rental-id="{{rental_ID}}">Return Car</div>
-                </td>
-
-            </tr>
-{{#end block rented_car}}
- */
-
 function get_rental_history($connection)
 {
     $returned = Array();
@@ -178,33 +138,6 @@ function get_rental_history($connection)
     
     return json_encode($returned);
 }
-
-/* I have also included the RETURNED CAR block for much the same reason:
-{{#block returned_car}}
-            <tr>
-                <td><img src="{{picture}}"></td> 
-                <td class="car_details"> 
-                    <div class="car_title">
-                        <div class="car_make">
-                            {{make}} | {{model}}
-                        </div>
-                        <div class="car_year">
-                            {{year}}
-                        </div>
-                    </div>
-                    <div class="car_size">
-                        Size: {{size}}
-                    </div>
-                    <div class="rental_ID">
-                        Rental #: {{rental_ID}}
-                    </div>   
-                    <div class="car_date">
-                        Return date: {{return_date}}
-                    </div>          
-                </td>
-            </tr>
-{{#end block returned_car}}
- */
 
 function get_current_date()
 {
