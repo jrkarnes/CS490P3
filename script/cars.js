@@ -10,7 +10,8 @@ function init() {
     $(".return_car").on("click",return_car($this.attr("data-rental-id")));
     //there needs to be a event listner for the tabs, however since they dont have ID's i'm not quite sure
     //how to do that, i can add IDs and do a couple event statements, but i wanted to kow what you thought first.
-    // rental history of the customer.
+	
+    // rental history of the customer. Per Kuhail's suggestion. -- Mikaela and Justin
     show_info();
 }
 
@@ -83,12 +84,7 @@ function rent_car(id)
     });
 }
 
-<<<<<<< HEAD
 
-function show_rented_cars()
-{
- 
-=======
 function return_car(rentId)
 {
     $.ajax({
@@ -150,7 +146,6 @@ function show_rented_cars()
             }
         }
     });
->>>>>>> refs/remotes/origin/master
 }
 
 function show_rental_history()
